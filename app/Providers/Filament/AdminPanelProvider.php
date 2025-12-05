@@ -24,6 +24,23 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->brandLogo('https://www.laboratoriosportugal.com/wp-content/uploads/2022/03/PORTUGAL-GRAPHICS-LOGO-1.png')
+            ->brandLogoHeight('6rem')
+            ->renderHook(
+                'panels::head.end',
+                fn (): string => '<style>
+                    body {
+                        background-image: url("https://laboratoriosportugal.com/wp-content/uploads/2021/10/nosotros-02.png");
+                        background-size: cover;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-attachment: fixed;
+                    }
+                    .fi-body {
+                        background-color: transparent !important;
+                    }
+                </style>',
+            )
             ->id('admin')
             ->path('admin')
             ->login()
