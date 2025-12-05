@@ -48,6 +48,13 @@ class ArtRequestResource extends Resource
                     ->label('Iniciado'),
                 Forms\Components\DateTimePicker::make('approved_at')
                     ->label('Aprobado'),
+                Forms\Components\FileUpload::make('attachments')
+                    ->label('Artes (Imágenes)')
+                    ->multiple()
+                    ->image()
+                    ->imageEditor()
+                    ->columnSpanFull()
+                    ->directory('art-attachments'),
             ]);
     }
 
@@ -103,6 +110,13 @@ class ArtRequestResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('view_attachments')
+                    ->label('Ver Artes')
+                    ->icon('heroicon-o-photo')
+                    ->modalContent(fn ($record) => view('art-requests.gallery', ['record' => $record]))
+                    ->modalWidth('4xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelAction(fn ($action) => $action->label('Cerrar')),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

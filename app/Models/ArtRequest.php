@@ -10,6 +10,10 @@ class ArtRequest extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'attachments' => 'array',
+    ];
+
     public function order()
     {
         return $this->belongsTo(Order::class);
