@@ -23,14 +23,19 @@ class ArtRequestResource extends Resource
     protected static ?string $pluralModelLabel = 'Solicitudes de Arte';
     protected static ?string $navigationLabel = 'Solicitudes de Arte';
 
+    public static function canCreate(): bool
+    {
+        return ! auth()->user()->isDesigner();
+    }
+
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()->orderBy('created_at', 'desc');
 
-        if (auth()->user()->isClient()) {
-            return $query->whereHas('order', function (Builder $query) {
-                $query->where('client_name', auth()->user()->name);
-            });
+        // Client restriction removed per user request. They can see all but not edit.
+        
+        if (auth()->user()->isDesigner()) {
+            return $query->where('designer_id', auth()->id());
         }
 
         return $query;
@@ -40,13 +45,18 @@ class ArtRequestResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Placeholder::make('id')
+                    ->label('N° Solicitud')
+                    ->content(fn ($record) => $record?->id ? '#' . $record->id : '-')
+                    ->hidden(fn ($record) => $record === null),
                 Forms\Components\Select::make('order_id')
                     ->relationship('order', 'code')
                     ->label('Orden')
                     ->required(),
                 Forms\Components\Select::make('designer_id')
-                    ->relationship('designer', 'name')
-                    ->label('Diseñador'),
+                    ->relationship('designer', 'name', fn (Builder $query) => $query->where('role', 'designer'))
+                    ->label('Diseñador')
+                    ->default(fn () => auth()->user()->isDesigner() ? auth()->id() : null),
                 Forms\Components\Select::make('status')
                     ->label('Estado')
                     ->options([
@@ -83,7 +93,12 @@ class ArtRequestResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('N° Solicitud')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('order.code')
                     ->label('Orden')
                     ->sortable(),
@@ -129,7 +144,8 @@ class ArtRequestResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn () => auth()->user()->isClient()),
                 Tables\Actions\Action::make('view_attachments')
                     ->label('Ver Artes')
                     ->icon('heroicon-o-photo')

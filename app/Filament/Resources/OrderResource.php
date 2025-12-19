@@ -24,13 +24,21 @@ class OrderResource extends Resource
     protected static ?string $pluralModelLabel = 'Órdenes';
     protected static ?string $navigationLabel = 'Órdenes';
 
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        // Client or Admin can access. Designer cannot.
+        // Actually, previous restriction said client can access.
+        // If client can access, it returns true.
+        // But prompt says "Designer... tampoco debe ver ordenes".
+        return ! $user?->isDesigner();
+    }
+
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
 
-        if (auth()->user()->isClient()) {
-            return $query->where('client_name', auth()->user()->name);
-        }
+        // Client restriction removed.
 
         return $query;
     }
@@ -134,7 +142,8 @@ class OrderResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn () => auth()->user()->isClient()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
