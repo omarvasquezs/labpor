@@ -27,19 +27,28 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo('https://www.laboratoriosportugal.com/wp-content/uploads/2022/03/PORTUGAL-GRAPHICS-LOGO-1.png')
             ->brandLogoHeight('6rem')
             ->renderHook(
-                'panels::head.end',
+                'panels::content.start',
+                fn (): string => view('filament.components.custom-alert')->render(),
+            )
+            ->renderHook(
+                'panels::body.end',
                 fn (): string => '
-                <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmRTjbKJ6BGUPbQfPfnyYaiuGWalVp8k5gz9v9oJHjMD0feGat54wPjQUv1X56alRLUHS1k23VNg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                 <script>
-                    document.addEventListener("DOMContentLoaded", () => {
-                        if (typeof Chart !== "undefined") {
-                            Chart.register(ChartDataLabels);
-                        }
-                    });
+                    (function() {
+                        const registerPlugin = () => {
+                            if (typeof Chart !== "undefined" && typeof ChartDataLabels !== "undefined") {
+                                Chart.register(ChartDataLabels);
+                            } else {
+                                setTimeout(registerPlugin, 200);
+                            }
+                        };
+                        registerPlugin();
+                    })();
                 </script>
                 <style>
                     body {
-                        background-image: url("https://laboratoriosportugal.com/wp-content/uploads/2021/10/nosotros-02.png");
+                        background-image: url("' . asset('labpor_background_optimized.png') . '");
                         background-size: cover;
                         background-position: center;
                         background-repeat: no-repeat;
@@ -48,8 +57,23 @@ class AdminPanelProvider extends PanelProvider
                     .fi-body {
                         background-color: transparent !important;
                     }
+                    .fi-sidebar {
+                        background-color: white !important;
+                    }
+                    :is(.dark) .fi-sidebar {
+                        background-color: #18181b !important;
+                    }
+                    .fi-main .fi-header-heading,
+                    .fi-main .fi-header-subheading, 
+                    .fi-main .fi-breadcrumbs-item-label {
+                        color: white !important;
+                    }
                 </style>',
             )
+            ->assets([
+                \Filament\Support\Assets\Js::make('chartjs-datalabels', 'https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js'),
+                \Filament\Support\Assets\Js::make('chart-datalabels-register', asset('js/chart-datalabels.js')),
+            ])
             ->id('admin')
             ->path('admin')
             ->login()
