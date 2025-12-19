@@ -23,6 +23,19 @@ class ArtRequestResource extends Resource
     protected static ?string $pluralModelLabel = 'Solicitudes de Arte';
     protected static ?string $navigationLabel = 'Solicitudes de Arte';
 
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->isClient()) {
+            return $query->whereHas('order', function (Builder $query) {
+                $query->where('client_name', auth()->user()->name);
+            });
+        }
+
+        return $query;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -43,11 +56,20 @@ class ArtRequestResource extends Resource
                         'OBSERVED' => 'Observado',
                     ])
                     ->required()
-                    ->default('PENDING'),
+                    ->default('PENDING')
+                    ->hidden(fn (string $context) => auth()->user()->isClient() && $context === 'create'), // Use closure for check
+                Forms\Components\Textarea::make('rejection_reason')
+                    ->label('Observaciones / Razón de rechazo')
+                    ->columnSpanFull()
+                    ->visible(fn ($get) => $get('status') === 'OBSERVED') // Visible if observed
+                    ->disabled(fn () => auth()->user()->isClient()) // Read-only for clients
+                    ->required(fn ($get) => $get('status') === 'OBSERVED'),
                 Forms\Components\DateTimePicker::make('started_at')
-                    ->label('Iniciado'),
+                    ->label('Iniciado')
+                    ->hidden(fn (string $context) => auth()->user()->isClient() && $context === 'create'),
                 Forms\Components\DateTimePicker::make('approved_at')
-                    ->label('Aprobado'),
+                    ->label('Aprobado')
+                    ->hidden(fn (string $context) => auth()->user()->isClient() && $context === 'create'),
                 Forms\Components\FileUpload::make('attachments')
                     ->label('Artes (Imágenes)')
                     ->multiple()

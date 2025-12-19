@@ -19,9 +19,23 @@ class OrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    // ... label methods ...
     protected static ?string $modelLabel = 'Orden';
     protected static ?string $pluralModelLabel = 'Órdenes';
     protected static ?string $navigationLabel = 'Órdenes';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        if (auth()->user()->isClient()) {
+            return $query->where('client_name', auth()->user()->name);
+        }
+
+        return $query;
+    }
+
+
 
     public static function form(Form $form): Form
     {
@@ -52,12 +66,18 @@ class OrderResource extends Resource
                     ->label('Estado')
                     ->options([
                         'PENDING' => 'Pendiente',
-                        'IN_PROGRESS' => 'En Progreso',
                         'COMPLETED' => 'Completado',
-                        'CANCELLED' => 'Cancelado',
+                        'CANCELED' => 'Cancelado',
                     ])
                     ->required()
-                    ->default('PENDING'),
+                    ->default('PENDING')
+                    ->hidden(fn () => auth()->user()->isClient()), // Hide for clients
+                Forms\Components\Textarea::make('rejection_reason')
+                    ->label('Razón de cancelación')
+                    ->columnSpanFull()
+                    ->visible(fn ($get) => $get('status') === 'CANCELED' || $get('status') === 'OBSERVED') // Visible if canceled/observed
+                    ->disabled(fn () => auth()->user()->isClient()) // Read-only for clients
+                    ->required(fn ($get) => $get('status') === 'CANCELED' || $get('status') === 'OBSERVED'),
                 Forms\Components\DatePicker::make('due_date')
                     ->label('Fecha de Vencimiento'),
             ]);
