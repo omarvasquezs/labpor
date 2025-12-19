@@ -71,11 +71,15 @@ class ArtRequestsChart extends ChartWidget
                 'y' => ['display' => false],
             ],
             'plugins' => [
+                'legend' => [
+                    'position' => 'right',
+                ],
                 'datalabels' => [
                     'display' => true,
                     'color' => 'white',
                     'font' => [
                         'weight' => 'bold',
+                        'size' => 14,
                     ],
                 ],
             ],

@@ -18,7 +18,7 @@ class ArtRequestsByDesignerChart extends ChartWidget
     public function getView(): string
     {
         return $this->hasData() 
-            ? 'filament-widgets::chart-widget' 
+            ? 'filament.widgets.bar-chart-with-labels'
             : 'filament.widgets.custom-chart-widget';
     }
 
@@ -76,9 +76,14 @@ class ArtRequestsByDesignerChart extends ChartWidget
             ],
             'plugins' => [
                 'datalabels' => [
-                    'anchor' => 'end',
-                    'align' => 'top',
-                    'color' => '#6b7280',
+                    'display' => true,
+                    'anchor' => 'center',
+                    'align' => 'center',
+                    'color' => 'white',
+                    'font' => [
+                        'weight' => 'bold',
+                        'size' => 20,
+                    ],
                 ],
             ],
         ];
