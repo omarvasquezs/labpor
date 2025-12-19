@@ -18,9 +18,16 @@ class StatsOverview extends BaseWidget
 
     protected function getStats(): array
     {
+        $user = auth()->user();
+        $query = ArtRequest::query();
+
+        if ($user && $user->isDesigner()) {
+            $query->where('designer_id', $user->id);
+        }
+
         return [
-            Stat::make('Solicitudes Activas', ArtRequest::whereIn('status', ['PENDING', 'IN_PROGRESS', 'OBSERVED'])->count()),
-            Stat::make('En Trabajo', ArtRequest::where('status', 'IN_PROGRESS')->count()),
+            Stat::make('Solicitudes Activas', (clone $query)->whereIn('status', ['PENDING', 'IN_PROGRESS', 'OBSERVED'])->count()),
+            Stat::make('En Trabajo', (clone $query)->where('status', 'IN_PROGRESS')->count()),
         ];
     }
 }

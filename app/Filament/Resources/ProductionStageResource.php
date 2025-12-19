@@ -26,7 +26,7 @@ class ProductionStageResource extends Resource
     public static function canAccess(): bool
     {
         $user = auth()->user();
-        return $user?->isAdmin() || $user?->isDesigner();
+        return $user?->isAdmin();
     }
 
     public static function form(Form $form): Form

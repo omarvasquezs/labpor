@@ -39,7 +39,14 @@ class ArtRequestsChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = ArtRequest::query()
+        $user = auth()->user();
+        $query = ArtRequest::query();
+
+        if ($user && $user->isDesigner()) {
+            $query->where('designer_id', $user->id);
+        }
+        
+        $data = $query
             ->join('orders', 'art_requests.order_id', '=', 'orders.id')
             ->where('art_requests.status', 'IN_PROGRESS')
             ->select('orders.type', DB::raw('count(*) as count'))
