@@ -26,6 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->brandLogo('https://www.laboratoriosportugal.com/wp-content/uploads/2022/03/PORTUGAL-GRAPHICS-LOGO-1.png')
             ->brandLogoHeight('6rem')
+            ->databaseNotifications()
             ->renderHook(
                 'panels::content.start',
                 fn (): string => view('filament.components.custom-alert')->render(),
@@ -65,8 +66,16 @@ class AdminPanelProvider extends PanelProvider
                     }
                     .fi-main .fi-header-heading,
                     .fi-main .fi-header-subheading, 
-                    .fi-main .fi-breadcrumbs-item-label {
+                    .fi-main .fi-breadcrumbs-item-label,
+                    .fi-main .fi-form-label,
+                    .fi-main .fi-fo-field-wrp-label,
+                    .fi-main .fi-fo-field-wrp-label span,
+                    .fi-main label {
                         color: white !important;
+                    }
+                    /* Fix File Upload dropzone text visibility in Light Mode (revert to dark gray) */
+                    html:not(.dark) .fi-main .fi-fo-file-upload label {
+                        color: #6b7280 !important;
                     }
                 </style>',
             )
@@ -83,7 +92,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
