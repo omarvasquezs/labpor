@@ -64,11 +64,9 @@ class ArtRequestResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('order.code')
                     ->label('Orden')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('designer.name')
                     ->label('Diseñador')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Estado')

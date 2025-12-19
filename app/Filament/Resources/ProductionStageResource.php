@@ -56,7 +56,6 @@ class ProductionStageResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('order.code')
                     ->label('Orden')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
