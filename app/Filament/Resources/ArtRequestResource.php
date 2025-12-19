@@ -81,10 +81,10 @@ class ArtRequestResource extends Resource
                     ->label('Aprobado')
                     ->hidden(fn (string $context) => auth()->user()->isClient() && $context === 'create'),
                 Forms\Components\FileUpload::make('attachments')
-                    ->label('Artes (Imágenes)')
+                    ->label('Artes (Adjuntos)')
                     ->multiple()
-                    ->image()
-                    ->imageEditor()
+                    ->openable()
+                    ->downloadable()
                     ->columnSpanFull()
                     ->directory('art-attachments'),
             ]);
