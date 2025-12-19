@@ -23,6 +23,12 @@ class ProductionStageResource extends Resource
     protected static ?string $pluralModelLabel = 'Etapas de Producción';
     protected static ?string $navigationLabel = 'Etapas de Producción';
 
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user?->isAdmin() || $user?->isDesigner();
+    }
+
     public static function form(Form $form): Form
     {
         return $form

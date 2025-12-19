@@ -23,6 +23,12 @@ class ProductionLogResource extends Resource
     protected static ?string $pluralModelLabel = 'Registros de Producción';
     protected static ?string $navigationLabel = 'Producción';
 
+    public static function canAccess(): bool
+    {
+        $user = auth()->user();
+        return $user?->isAdmin() || $user?->isDesigner();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
