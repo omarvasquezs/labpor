@@ -8,7 +8,15 @@ use App\Models\User;
 
 class ArtRequest extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'order_id',
+        'designer_id',
+        'status',
+        'started_at',
+        'approved_at',
+        'attachments',
+        'rejection_reason',
+    ];
 
     protected $casts = [
         'attachments' => 'array',

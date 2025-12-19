@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'code',
+        'client_name',
+        'type',
+        'quantity',
+        'status',
+        'due_date',
+        'rejection_reason',
+    ];
 
     public function artRequests()
     {
